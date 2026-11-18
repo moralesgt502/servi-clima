@@ -14,8 +14,10 @@ function noExiste(id) {
 }
 
 // GET /ordenes
+// GET /ordenes y GET /ordenes?estado=pendiente
+// req.query trae los filtros; el servicio decide cuáles usa
 export function listarOrdenes(req, res) {
-    res.json(servicio.listar());
+    res.json(servicio.listar(req.query));
 }
 
 // GET /ordenes/:id
