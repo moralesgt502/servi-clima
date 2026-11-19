@@ -4,18 +4,13 @@
 // node:sqlite viene con Node: no hay nada que instalar con npm.
 
 import { DatabaseSync } from 'node:sqlite';
-import { mkdirSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { ESTADOS, DEPARTAMENTOS, CATEGORIAS } from './catalogos.js';
 
 // import.meta.dirname es src: se sube un nivel hasta la raíz
-const rutaDb = path.resolve(
-    process.env.DATABASE_PATH ?? path.join(import.meta.dirname, '..', 'datos', 'serviclima.db'),
-);
+const rutaDb = path.join(import.meta.dirname, '..', 'datos', 'serviclima.db');
 const rutaSeed = path.join(import.meta.dirname, '..', 'datos', 'db.json');
-
-// Render puede montar almacenamiento persistente en /var/data.
-mkdirSync(path.dirname(rutaDb), { recursive: true });
 
 // Si serviclima.db no existe, SQLite lo crea vacío
 export const db = new DatabaseSync(rutaDb);
