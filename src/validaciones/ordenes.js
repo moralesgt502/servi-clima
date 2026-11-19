@@ -11,9 +11,16 @@ function esTextoConContenido(valor) {
     return typeof valor === 'string' && valor.trim() !== '';
 }
 
+function esFechaValida(valor) {
+    if (typeof valor !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(valor)) return false;
+    const fecha = new Date(`${valor}T00:00:00.000Z`);
+    return !Number.isNaN(fecha.getTime()) && fecha.toISOString().slice(0, 10) === valor;
+}
+
 const reglas = {
     cliente: (valor) => {
         if (!esTextoConContenido(valor)) return 'El cliente es obligatorio';
+        if (valor.length > 200) return 'El cliente no puede superar 200 caracteres';
         return null;
     },
     nit: (valor) => {
@@ -32,25 +39,26 @@ const reglas = {
         return null;
     },
     tecnico: (valor) => {
+        if (typeof valor === 'string' && valor.length > 120) return 'El técnico no puede superar 120 caracteres';
         if (!esTextoConContenido(valor)) return 'El técnico es obligatorio';
         return null;
     },
     fecha: (valor) => {
         // Formato del input type="date": 2026-11-11
-        if (typeof valor !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(valor)) {
+        if (!esFechaValida(valor)) {
             return 'La fecha debe tener formato AAAA-MM-DD';
         }
         return null;
     },
     horas: (valor) => {
         // typeof rechaza "4": el número tiene que llegar como número
-        if (typeof valor !== 'number' || !(valor > 0 && valor <= 24)) {
+        if (typeof valor !== 'number' || !Number.isFinite(valor) || !(valor > 0 && valor <= 24)) {
             return 'Las horas deben ser un número mayor que 0 y hasta 24';
         }
         return null;
     },
     monto: (valor) => {
-        if (typeof valor !== 'number' || !(valor > 0)) {
+        if (typeof valor !== 'number' || !Number.isFinite(valor) || !(valor > 0)) {
             return 'El monto debe ser un número mayor que cero';
         }
         return null;

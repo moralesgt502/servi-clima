@@ -16,6 +16,10 @@ export function manejarErrores(error, req, res, next) {
         return res.status(400).json({ error: 'El cuerpo no es un JSON válido', detalles: [] });
     }
 
+    if (error.type === 'entity.too.large') {
+        return res.status(413).json({ error: 'El cuerpo de la solicitud es demasiado grande', detalles: [] });
+    }
+
     // Cualquier otro error es un fallo del servidor: el detalle se queda
     // en la terminal y al cliente solo se le dice que algo falló.
     console.error(error);
