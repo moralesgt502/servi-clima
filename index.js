@@ -16,7 +16,10 @@ import { noEncontrado } from './src/middlewares/no-encontrado.js';
 import { manejarErrores } from './src/middlewares/manejar-errores.js';
 
 // Render asigna el puerto en PORT; en su computadora se usa PUERTO del .env
-const PUERTO = process.env.PORT ?? process.env.PUERTO;
+const PUERTO = process.env.PORT ?? process.env.PUERTO ?? 3001;
+if (!process.env.ORIGEN_FRONTEND) {
+    throw new Error('Falta configurar ORIGEN_FRONTEND con el origen permitido del frontend');
+}
 const app = express();
 
 // En Render las peticiones llegan a través de un proxy.
@@ -30,6 +33,8 @@ app.use(cors({ origin: process.env.ORIGEN_FRONTEND })); // 3. CORS: solo el fron
 app.use(limitarPeticiones);                           // 4. máximo de peticiones por cliente
 app.use(express.json());                              // 5. cuerpo JSON en req.body
 
+app.get('/health', (req, res) => res.status(200).json({ status: 'ok' }));
+
 // Rutas
 app.use('/ordenes', rutasOrdenes);
 app.use(rutasCatalogos); // /departamentos y /categorias
@@ -39,7 +44,7 @@ app.use(rutasResumen);   // /resumen
 app.use(noEncontrado);   // 6. ninguna ruta atendió: 404
 app.use(manejarErrores); // 7. siempre el último
 
-app.listen(PUERTO, () => {
+app.listen(PUERTO, '0.0.0.0', () => {
     console.log(`API de Serviclima en el puerto ${PUERTO}`);
     console.log(`Origen permitido: ${process.env.ORIGEN_FRONTEND}`);
 });
